@@ -88,6 +88,8 @@
 ;; 2004.  Multiple field separators added on 12 June 2004.
 ;; Transposition added on 22 June 2004.  Separator invisibility added
 ;; on 23 June 2004.
+;; Bugfix (error) 2012-10-02 by Jonas Stein <news at jonasstein.de>
+;; Bugfix (mode-line-format) 2012-10-02 by Jonas Stein <news at jonasstein.de>
 
 ;;; See also:
 
@@ -145,7 +147,7 @@ All must be different from the field quote characters, `csv-field-quotes'."
 		 (if (or (/= (length x) 1)
 			 (and (boundp 'csv-field-quotes)
 			      (member x csv-field-quotes)))
-		     (error)))
+		     (error "an error occured")))
 	       value)
 	 (custom-set-default variable value)
 	 (setq csv-separator-chars (mapcar 'string-to-char value)
@@ -168,7 +170,7 @@ All must be different from the field separators, `csv-separators'."
 	 (mapc (lambda (x)
 		 (if (or (/= (length x) 1)
 			 (member x csv-separators))
-		     (error)))
+		     (error "an error occured")))
 	       value)
 	 (when (boundp 'csv-mode-syntax-table)
 	   ;; FIRST remove old quote syntax:
@@ -248,23 +250,23 @@ Number of spaces used by `csv-align-fields' after separators."
 ;; This mechanism seems to keep XEmacs happy:
 (defvar csv-separator-face 'csv-separator-face
   "Face name to use to highlight separators.")
-
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;  Mode definition, key bindings and menu
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defconst csv-mode-line-help-echo
   ;; See bindings.el for details of `mode-line-format' construction.
-  (get-text-property 0 'help-echo (car default-mode-line-format))
+  (get-text-property 0 'help-echo (car mode-line-format))
   "Primary default mode line help echo text.")
 
 (defconst csv-mode-line-format
   ;; See bindings.el for details of `mode-line-format' construction.
-  (append (butlast default-mode-line-format 2)
+  (append (butlast mode-line-format 2)
 	  (cons `(csv-field-index-string
 		  ("" csv-field-index-string
 		   ,(propertize "--" 'help-echo csv-mode-line-help-echo)))
-		(last default-mode-line-format 2)))
+		(last mode-line-format 2)))
   "Mode line format string for CSV mode.")
 
 (define-derived-mode csv-mode text-mode "CSV"
